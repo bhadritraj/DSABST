@@ -3,7 +3,6 @@ import csv
 import tkinter as tk
 from tkinter import messagebox
 
-# Initialize Binary Search Tree
 a = BST.BinarySearchTree()
 
 # Construct BST from CSV data
@@ -16,23 +15,19 @@ def close(root):
 
 def main():
     """Main function to create GUI."""
-    # Create main window
     root = tk.Tk()
     root.title("Student Login")
     root.geometry("970x666")
 
-    # Welcome label
     welcome_label = tk.Label(root, text="Welcome to DSA inc.", font=("Helvetica", 20))
     welcome_label.place(relx=0.5, rely=0.2, anchor='center')
 
-    # Buttons for various actions
     Students_btn = tk.Button(root, text="Student record", command=display_details, height=5, width=12)
     Students_btn.place(relx=0.5, rely=0.4, anchor='center')
 
     Student_btn = tk.Button(root, text="Student", command=logs, height=5, width=12)
     Student_btn.place(relx=0.5, rely=0.5, anchor='center')
-
-    # ✅ FIXED: Opens account creation window
+    
     createacc_btn = tk.Button(root, text="Create account", command=acc_creation, height=5, width=12)
     createacc_btn.place(relx=0.5, rely=0.6, anchor='center')
 
@@ -142,9 +137,7 @@ def acc_creation():
     create_button = tk.Button(root1, text="Create Account", command=create_acc)
     create_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
-# Call the main function
 main()
 
-# For testing purposes
 print(a.inorder_traversal(root1))
 print(a.search_name((1, "bhadri")))
