@@ -1,41 +1,52 @@
-import BST,csv
+import BST
+import csv
 import tkinter as tk
 from tkinter import messagebox
 
-a=BST.BinarySearchTree()
-root1=a.contruct_bst_from_csv()
-def close(root1):
-    root1.destroy()
-    a.store_bst_data_to_csv()
+# Initialize Binary Search Tree
+a = BST.BinarySearchTree()
+
+# Construct BST from CSV data
+root1 = a._construct_bst_from_csv("data.csv")
+
+def close(root):
+    """Close the window and store BST data to CSV."""
+    root.destroy()
+    a.store_bst_data_to_csv("data.csv")
 
 def main():
-    root=tk.Tk()
+    """Main function to create GUI."""
+    # Create main window
+    root = tk.Tk()
     root.title("Student Login")
     root.geometry("970x666")
-    
+
+    # Welcome label
     welcome_label = tk.Label(root, text="Welcome to DSA inc.", font=("Helvetica", 20))
     welcome_label.place(relx=0.5, rely=0.2, anchor='center')
 
-    Students_btn = tk.Button(root, text="Student record", command=display_details,height=5,width=12)
-    Students_btn.grid(row=1,column=1,padx=10,pady=10)
+    # Buttons for various actions
+    Students_btn = tk.Button(root, text="Student record", command=display_details, height=5, width=12)
     Students_btn.place(relx=0.5, rely=0.4, anchor='center')
 
-    Student_btn = tk.Button(root, text="Student", command=logs,height=5,width=12)
-    Student_btn.grid(row=2,column=1,padx=10,pady=10)
+    Student_btn = tk.Button(root, text="Student", command=logs, height=5, width=12)
     Student_btn.place(relx=0.5, rely=0.5, anchor='center')
 
-    createacc_btn= tk.Button(root, text="Create account", command=close,height=5,width=12)
-    Student_btn.grid(row=3,column=1,padx=10,pady=10)
-    Student_btn.place(relx=0.5, rely=0.6, anchor='center')
-    
+    # ✅ FIXED: Opens account creation window
+    createacc_btn = tk.Button(root, text="Create account", command=acc_creation, height=5, width=12)
+    createacc_btn.place(relx=0.5, rely=0.6, anchor='center')
+
+    root.mainloop()
+
 def display_details():
+    """Display all student details from CSV."""
     try:
         rows = []
         with open("data.csv", 'r', newline='') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 rows.append(row)
-        
+
         if rows:
             students_window = tk.Toplevel()
             students_window.title("All Details")
@@ -50,38 +61,29 @@ def display_details():
                     detail_label = tk.Label(label_frame, text=detail, font=("Arial", 10))
                     detail_label.grid(row=row_index, column=col_index, padx=5, pady=5)
         else:
-            messagebox.showinfo("No Employee", "No Employee in CSV details")
+            messagebox.showinfo("No Student", "No Student records found in CSV.")
     except FileNotFoundError:
         messagebox.showerror("File Not Found", "The CSV file 'data.csv' does not exist.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {str(e)}")
-def logs():
-    '''def login():
-        employeeid = int(employee_id_entry.get())
-        password = password_entry.get()
-        b=check_employee_login(employeeid, password)
-        s=a.search_name((int(employeeid),password))
-        if b:
-            messagebox.showinfo("Login Successful", "Welcome, " + s[1] + "!")
-            close(root1)
 
-        else:
-            messagebox.showerror("Login Failed", "Invalid student ID or password.")
-        '''
+def logs():
+    """Display login window for employees."""
     def login():
-        employeeid = int(employee_id_entry.get())
+        """Check employee login credentials."""
+        employee_id = int(employee_id_entry.get())
         password = password_entry.get()
-        
-        if check_employee_login(employeeid, password):
-    
-            employee_info = a.search_name(employeeid, password)
+
+        if check_employee_login(employee_id, password):
+            employee_info = a.search_name((employee_id, password))
             if employee_info:
-                messagebox.showinfo("Login Successful", "Welcome, " + employee_info.name + "!")
+                messagebox.showinfo("Login Successful", "Welcome, " + employee_info[1] + "!")
                 root1.destroy()
             else:
                 messagebox.showerror("Login Failed", "Invalid employee ID or password.")
         else:
             messagebox.showerror("Login Failed", "Invalid employee ID or password.")
+
     root1 = tk.Toplevel()
     root1.title("Employee Login")
     root1.geometry("344x333")
@@ -90,36 +92,34 @@ def logs():
     employee_id_label.grid(row=0, column=0, padx=10, pady=5)
     employee_id_entry = tk.Entry(root1)
     employee_id_entry.grid(row=0, column=1, padx=10, pady=5)
-    
-    
+
     password_label = tk.Label(root1, text="Password:")
     password_label.grid(row=1, column=0, padx=10, pady=5)
     password_entry = tk.Entry(root1, show="*")
     password_entry.grid(row=1, column=1, padx=10, pady=5)
-    
-    
+
     login_button = tk.Button(root1, text="Login", command=login)
     login_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
-    createacc_button = tk.Button(root1, text="Create Account", command=acc_creation)
-    createacc_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
-
-    deleteacc_button=tk.Button(root1, text="Delete Account", command=acc_deletion)
-    deleteacc_button.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
-
-def check_employee_login(employeeid, password):
-    if a.search_name(int(employeeid),password)is not None:
+def check_employee_login(employee_id, password):
+    """Check if employee login credentials are valid."""
+    if a.search_name((int(employee_id), password)) is not None:
         return True
     else:
         return False
 
 def acc_creation():
+    """Create a new employee account."""
     def create_acc():
-        if employee_id_entry.get().isalpha():
-            messagebox.showerror("Error", "Id should be only numeric")
-        a.insert(int(employee_id_entry.get()),name_entry.get(),password_entry.get())
-        messagebox.showinfo("Success", "Account created sucessfully")
+        """Create a new employee account."""
+        if not employee_id_entry.get().isdigit():
+            messagebox.showerror("Error", "ID should be numeric.")
+            return
+
+        a.insert((int(employee_id_entry.get()), name_entry.get(), password_entry.get()))
+        messagebox.showinfo("Success", "Account created successfully.")
         close(root1)
+
     root1 = tk.Toplevel()
     root1.title("Employee Login")
     root1.geometry("344x333")
@@ -133,41 +133,18 @@ def acc_creation():
     name_label.grid(row=1, column=0, padx=10, pady=5)
     name_entry = tk.Entry(root1)
     name_entry.grid(row=1, column=1, padx=10, pady=5)
-    
-    password_label = tk.Label(root1, text="Password:")
-    password_label.grid(row=2, column=0, padx=10, pady=5)
-    password_entry = tk.Entry(root1, show="*")
-    password_entry.grid(row=2, column=1, padx=10, pady=5)
-
-    Create_button = tk.Button(root1, text="Create Account", command=create_acc)
-    Create_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
-
-
-def acc_deletion():
-    def delete_acc():
-        if employee_id_entry.get().isalpha():
-            messagebox.showerror("Error", "Id should be only numeric")
-        a.delete(int(employee_id_entry.get()),password_entry.get())
-        messagebox.showinfo("Success", "Account created sucessfully")
-        close(root1)
-        
-    root1 = tk.Toplevel()
-    root1.title("Employee Login")
-    root1.geometry("344x333")
-
-    employee_id_label = tk.Label(root1, text="Employee ID:")
-    employee_id_label.grid(row=0, column=0, padx=10, pady=5)
-    employee_id_entry = tk.Entry(root1)
-    employee_id_entry.grid(row=0, column=1, padx=10, pady=5)
 
     password_label = tk.Label(root1, text="Password:")
     password_label.grid(row=2, column=0, padx=10, pady=5)
     password_entry = tk.Entry(root1, show="*")
     password_entry.grid(row=2, column=1, padx=10, pady=5)
-    
-    delete_button = tk.Button(root1, text="Delete Account", command=delete_acc)
-    delete_button.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
 
+    create_button = tk.Button(root1, text="Create Account", command=create_acc)
+    create_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
 
-    
+# Call the main function
 main()
+
+# For testing purposes
+print(a.inorder_traversal(root1))
+print(a.search_name((1, "bhadri")))
